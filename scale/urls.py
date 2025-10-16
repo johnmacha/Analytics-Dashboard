@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import SiteActivityCreateView
+from . import views
 
 urlpatterns = [
-    path('activity/', SiteActivityCreateView.as_view(), name='create-activity'),
+    path('activity/', views.create_activity, name='create-activity'),
 ]

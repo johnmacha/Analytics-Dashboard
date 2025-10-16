@@ -1,29 +1,35 @@
-import csv
-from .models import SiteActivity 
 from django.contrib import admin
-from django_admin_charts.admin import AdminChartMixin
+from django.urls import path
+from django.shortcuts import render
+from .models import SiteActivity 
+from django.db.models import Count
+from django.utils import timezone
+from datetime import timedelta
 
 # Register your models here.
 @admin.register(SiteActivity)
-class SiteActivityAdmin(AdminChartMixin, admin.ModelAdmin):
-    change_list_template = "admin/analytics_dashboard.html"
+class SiteActivityAdmin( admin.ModelAdmin):
+    change_list_template = "admin/dashboard.html"
     list_display = ('event_type', 'page_url', 'user_ip', 'created_at')
-    chart_title = 'Activity Overview'
-    chart_model = SiteActivity
-    chart_date_field = 'created_at'
-    chart_aggregate_field = 'id'
-    chart_aggregate_func = 'count'
-    actions = ['export_as_csv']
+    
+    def changelist_view(self, request, extra_context = None):
+        #Prepare data for Chart.js
+        today = timezone.now()
+        last_7_days = [today - timedelta(days=i) for i in range(6, -1, -1)]
+        labels = [d.strftime("%b %d") for d in last_7_days]
 
-    def export_as_csv(self, request, queryset):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attchment; filename="site_activities.csv"'
-        writer = csv.writer(response)
-        writer.writerow(['Event Type', 'Page URL', 'User Agent', 'Created At'])
-        for obj in queryset:
-            writer.writerow([obj.event_type, obj.page_url, obj.user_ip, obj.user_agent, obj.created_at])
-        return response
+        data = []
+        for day in last_7_days:
+            count = SiteActivity.objects.filter(
+                created_at_date=day.date()
+            ).count()
+            data.append(count)
 
-    export_as_csv.short_description = "Eport Selected as CSV"
+            extra_context = extra_context or {}
+            extra_context['chart_labels'] = labels
+            extra_context['chart_data'] = data
+
+        return super().changelist_view(request, extra_context)
+
 
 

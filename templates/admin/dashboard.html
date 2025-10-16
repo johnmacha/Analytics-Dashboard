@@ -1,0 +1,42 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Site Activity Dashboard</h1>
+<canvas id="activityChart" width="600" height="300"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartLabels = {{chart_labels|safe}};
+    const chartData = {{chartData|safe}};
+
+    console.log(chart_labels);
+    console.log(chart_labels);
+
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Activity Count (Last 7 Days)',
+                data: chartData,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false}
+            },
+            scales: {
+                y: {beginAtZero: true}
+            }
+        }
+    });
+
+</script>
+
+{% endblock %}
