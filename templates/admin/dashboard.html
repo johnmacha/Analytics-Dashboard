@@ -7,13 +7,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const chartLabels = {{chart_labels|safe}};
-    const chartData = {{chartData|safe}};
+    const chartData = {{chart_data|safe}};
 
-    console.log(chart_labels);
-    console.log(chart_labels);
+    console.log(chartLabels);
+    console.log(chartData);
 
-    const ctx = document.getElementById('activityChart').getContext('2d');
-    const chart = new Chart(ctx, {
+    const ctx = document.getElementById('activityChart').getContext('2d'); <!--For 3D use '.getContext('webgl')'-->
+    new Chart(ctx, {
         type: 'line',
         data: {
             labels: chartLabels,
@@ -39,4 +39,5 @@
 
 </script>
 
+{{ block.super }}
 {% endblock %}
