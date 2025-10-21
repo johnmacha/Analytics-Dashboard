@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Activity Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Site Activity Dashboard</h1>
+    <form method="get">
+    {{form.as_p}}
+    <button type="submit">Filter</button>
+    </form><br>
+
+<div style="margin-bottom: 20px;">
+    <a href ="{% url 'export_csv'%}" class="button" 
+    style="background-color:#4CAF50; color:white; padding:10px 16px; 
+            text-decoration:none; border-radius:6px;"
+    >📁Download CSV</a>
+</div>
+
+    <div style="max-width: 650px; margin: auto;">
+    <canvas id="activityChart"></canvas>
+    </div>
+
+    <script>
+    const chartLabels = {{ chart_labels|safe }};
+    const chartData = {{chart_data|safe}};
+
+    console.log(chartLabels);
+    console.log(chartData);
+
+    const ctx = document.getElementById('activityChart').getContext('2d'); <!--For 3D use '.getContext('webgl')'-->
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Activity Count (Last 7 Days)',
+                data: chartData,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false}
+            },
+            scales: {
+                y: {beginAtZero: true}
+            }
+        }
+    });
+
+    </script>
+</body>
+</html>
